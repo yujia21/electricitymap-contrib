@@ -953,8 +953,8 @@ label[for="checkbox-colorblind"] {
     display: inline-block;
     background-image: url(../images/built-by-tomorrow-white.svg);
     background-size: cover;
-    width: 150px;
-    height: 16px;
+    width: 154px;
+    height: 24px;
 }
 
 #watermark.brightmode #built-by-tomorrow{
