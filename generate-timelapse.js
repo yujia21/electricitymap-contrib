@@ -48,7 +48,7 @@ async function capture(browser, moment) {
     }
     const hasWind = await page.evaluate("document.getElementById('wind').style.display !== 'none'");
     if (!hasWind) {
-      throw new Error(`${url} has not wind shows connection warning :/`);
+      throw new Error(`${url} has not wind :/`);
     }
     await page.waitFor(10000) // wait for wind to reach stationary state
     await page.screenshot({ path })
