@@ -11,7 +11,6 @@ import { Provider } from 'react-redux';
 // Components
 import OnboardingModal from './components/onboardingmodal';
 import ZoneMap from './components/map';
-import TimeSlider from './components/timeslider';
 import CountryTable from './components/countrytable';
 import LineGraph from './components/linegraph';
 import HorizontalColorbar from './components/horizontalcolorbar';
@@ -186,8 +185,6 @@ const solarColorbarColor = d3.scaleLinear()
   .range(['black', 'white', 'gold']);
 const solarColorbar = new HorizontalColorbar('.solar-potential-bar', solarColorbarColor)
   .markerColor('red');
-
-const zoneDetailsTimeSlider = new TimeSlider('.zone-time-slider', dataEntry => dataEntry.stateDatetime);
 
 // Initialise mobile app (cordova)
 const app = {
@@ -925,7 +922,6 @@ function renderHistory(state) {
   if (!history) {
     countryHistoryCarbonGraph.data([]).render();
     countryHistoryPricesGraph.data([]).render();
-    zoneDetailsTimeSlider.data([]).render();
     return;
   }
 
@@ -998,25 +994,10 @@ function renderHistory(state) {
       .range(['yellow', 'red']))
     .data(history);
 
-  zoneDetailsTimeSlider.data(history);
-
   // Update country table with all possible exchanges
   countryTable
     .exchangeKeys(getState().application.electricityMixMode === 'consumption' ? getExchangeKeys(history) : [])
     .render();
-
-  zoneDetailsTimeSlider.onChange((selectedZoneTimeIndexInput) => {
-    // when slider is on last value, we set the value to null in order to use the current state
-    if (getState().application.selectedZoneTimeIndex !== selectedZoneTimeIndexInput) {
-      const selectedZoneTimeIndex = selectedZoneTimeIndexInput === (history.length - 1)
-        ? null
-        : selectedZoneTimeIndexInput;
-      dispatch({
-        type: 'UPDATE_SLIDER_SELECTED_ZONE_TIME',
-        payload: { selectedZoneTimeIndex },
-      });
-    }
-  }).render();
 
   const currencySymbol = getSymbolFromCurrency((history[0].price || {}).currency);
   countryHistoryPricesGraph.setYLabel((currencySymbol || '?') + '/MWh');
@@ -1276,7 +1257,6 @@ observe(state => state.application.selectedZoneName, (selectedZoneName, state) =
   // Render
   renderCountryTable(state);
   renderHistory(state);
-  zoneDetailsTimeSlider.selectedIndex(null, null);
 
   // Fetch history if needed
   tryFetchHistory(state);
@@ -1299,7 +1279,7 @@ observe(state => state.data.histories, (histories, state) => {
 observe(state => state.application.selectedZoneTimeIndex, (i, state) => {
   renderCountryTable(state);
   renderOpenTooltips(state);
-  [countryHistoryCarbonGraph, countryHistoryPricesGraph, zoneDetailsTimeSlider].forEach((g) => {
+  [countryHistoryCarbonGraph, countryHistoryPricesGraph].forEach((g) => {
     g.selectedIndex(i, state.application.previousSelectedZoneTimeIndex);
   });
 });
